@@ -10,10 +10,10 @@
  Created: 2025
 */
 
-package com.om.DataMagic.process.codePlatform.gitcode;
+package com.om.DataMagic.process.codePlatform.gitee;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.om.DataMagic.client.codePlatform.gitcode.GitCodeService;
+import com.om.DataMagic.client.codePlatform.gitee.GiteeService;
 import com.om.DataMagic.common.util.ObjectMapperUtil;
 import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.domain.codePlatform.gitcode.primitive.GitCodeConstant;
@@ -33,16 +33,16 @@ import java.util.List;
  * issue application service.
  *
  * @author zhaoyan
- * @since 2025-01-17
+ * @since 2025-02-06
  */
 @Component
-public class GitCodeIssueProcess implements DriverManager {
+public class GiteeIssueProcess implements DriverManager {
 
     /**
-     * gitcode service.
+     * gitee service.
      */
     @Autowired
-    private GitCodeService service;
+    private GiteeService service;
 
     /**
      * issue converter.
@@ -72,7 +72,9 @@ public class GitCodeIssueProcess implements DriverManager {
         for (RepoDO repoDO : repoDOList) {
             issueList.addAll(getIssueList(repoDO));
         }
-        issueService.saveOrUpdateBatch(issueList);
+        if (!issueList.isEmpty()){
+            issueService.saveOrUpdateBatch(issueList);
+        }
     }
 
     /**
@@ -86,7 +88,9 @@ public class GitCodeIssueProcess implements DriverManager {
         int page = 1;
         while (true) {
             String issueInfo = service.getIssueInfo(repoDO.getNamespace(), repoDO.getName(), page);
-            if (GitCodeConstant.NULL_ARRAY_RESPONSE.equals(issueInfo)) {
+            if ("{\"message\":\"Not Found Project\"}".equals(issueInfo)
+                    || issueInfo.startsWith("IOException retry 3 times failed:")
+                    || GitCodeConstant.NULL_ARRAY_RESPONSE.equals(issueInfo)) {
                 break;
             }
             page++;
@@ -107,7 +111,7 @@ public class GitCodeIssueProcess implements DriverManager {
                 issueArray -> ObjectMapperUtil.toObject(ArrayNode.class, issueArray)).toList();
         List<IssueDO> issueDOList = new ArrayList<>();
         for (ArrayNode arrayNode : arrayNodeList) {
-            issueDOList.addAll(converter.toDOList(arrayNode, repoDO.getNamespace(), CodePlatformEnum.GITCODE));
+            issueDOList.addAll(converter.toDOList(arrayNode, repoDO.getNamespace(), CodePlatformEnum.GITEE));
         }
         return issueDOList;
     }

@@ -14,6 +14,7 @@ package com.om.DataMagic.infrastructure.pgDB.converter;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.om.DataMagic.common.util.ObjectMapperUtil;
+import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.IssueDO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ public class IssueConverterTest {
         ArrayNode arrayNode = ObjectMapperUtil.toObject(ArrayNode.class, getIssueListFromAPI());
         Assertions.assertNotNull(arrayNode);
 
-        List<IssueDO> doList = issueConverter.toDOList(arrayNode, ORG_NAME);
+        List<IssueDO> doList = issueConverter.toDOList(arrayNode, ORG_NAME, CodePlatformEnum.GITCODE);
         Assertions.assertEquals(2, doList.size());
         Assertions.assertEquals(ORG_NAME, doList.get(0).getNamespace());
     }

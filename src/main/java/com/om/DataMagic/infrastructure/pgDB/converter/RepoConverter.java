@@ -35,12 +35,16 @@ public class RepoConverter {
      * 将repo json数组转化为DO list.
      *
      * @param arrayNode json数组
+     * @param codePlatformEnum 代码平台枚举
      * @return DO list
      */
-    public List<RepoDO> toDOList(ArrayNode arrayNode) {
+    public List<RepoDO> toDOList(ArrayNode arrayNode, CodePlatformEnum codePlatformEnum) {
         List<RepoDO> repoDOList = new ArrayList<>();
         for (JsonNode repoNode : arrayNode) {
-            repoDOList.add(toDO(repoNode));
+            RepoDO repoDO = toDO(repoNode);
+            repoDO.setUuid(codePlatformEnum.getText() + "-" + repoDO.getId());
+            repoDO.setCodePlatform(codePlatformEnum.getText());
+            repoDOList.add(repoDO);
         }
         return repoDOList;
     }
@@ -54,8 +58,6 @@ public class RepoConverter {
     public RepoDO toDO(JsonNode repoJson) {
         RepoDO repoDO = new RepoDO();
         repoDO.setId(repoJson.path("id").asText());
-        repoDO.setCodePlatform(CodePlatformEnum.GITCODE.getText());
-        repoDO.setUuid(CodePlatformEnum.GITCODE.getText() + "-" + repoDO.getId());
         repoDO.setName(repoJson.path("name").asText());
         repoDO.setPath(repoJson.path("path").asText());
         repoDO.setBody(repoJson.path("description").asText());

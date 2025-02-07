@@ -10,13 +10,13 @@
  Created: 2025
 */
 
-package com.om.DataMagic.process.codePlatform.gitcode;
+package com.om.DataMagic.process.codePlatform.gitee;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.om.DataMagic.client.codePlatform.gitcode.GitCodeService;
+import com.om.DataMagic.client.codePlatform.gitee.GiteeService;
+import com.om.DataMagic.common.util.ObjectMapperUtil;
 import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.domain.codePlatform.gitcode.primitive.GitCodeConstant;
-import com.om.DataMagic.common.util.ObjectMapperUtil;
 import com.om.DataMagic.infrastructure.pgDB.converter.PRConverter;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.PRDO;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.RepoDO;
@@ -33,16 +33,16 @@ import java.util.List;
  * pr application service.
  *
  * @author zhaoyan
- * @since 2025-01-15
+ * @since 2025-02-06
  */
 @Component
-public class GitCodePRProcess implements DriverManager {
+public class GiteePRProcess implements DriverManager {
 
     /**
-     * gitcode service.
+     * gitee service.
      */
     @Autowired
-    private GitCodeService service;
+    private GiteeService service;
 
     /**
      * PR converter.
@@ -72,7 +72,9 @@ public class GitCodePRProcess implements DriverManager {
         for (RepoDO repoDO : repoDOList) {
             prList.addAll(getPRList(repoDO));
         }
-        prService.saveOrUpdateBatch(prList);
+        if (!prList.isEmpty()){
+            prService.saveOrUpdateBatch(prList);
+        }
     }
 
     /**
@@ -86,7 +88,9 @@ public class GitCodePRProcess implements DriverManager {
         int page = 1;
         while (true) {
             String prInfo = service.getPRInfo(repoDO.getNamespace(), repoDO.getName(), page);
-            if (GitCodeConstant.NULL_ARRAY_RESPONSE.equals(prInfo)) {
+            if ("{\"message\":\"Not Found Project\"}".equals(prInfo)
+                    || prInfo.startsWith("IOException retry 3 times failed:")
+                    || GitCodeConstant.NULL_ARRAY_RESPONSE.equals(prInfo)) {
                 break;
             }
             page++;
@@ -108,7 +112,7 @@ public class GitCodePRProcess implements DriverManager {
                 prArray -> ObjectMapperUtil.toObject(ArrayNode.class, prArray)).toList();
         List<PRDO> prDOList = new ArrayList<>();
         for (ArrayNode arrayNode : arrayNodeList) {
-            prDOList.addAll(converter.toDOList(arrayNode, repoDO.getNamespace(), CodePlatformEnum.GITCODE));
+            prDOList.addAll(converter.toDOList(arrayNode, repoDO.getNamespace(), CodePlatformEnum.GITEE));
         }
         return prDOList;
     }

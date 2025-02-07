@@ -42,20 +42,22 @@ public class TaskManager {
     /**
      * Map of task mappings.
      */
-
-
     public static final Map<String, String> TASK_MAPPING = Map.ofEntries(
             entry("gitcode_user", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeProcess"),
             entry("gitcode_repo", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeRepoProcess"),
             entry("gitcode_pr", "com.om.DataMagic.process.codePlatform.gitcode.GitCodePRProcess"),
             entry("gitcode_issue", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeIssueProcess"),
             entry("gitcode_comment", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeCommentProcess"),
-            entry("gitee_user", "com.om.DataMagic.process.codePlatform.gitee.GiteeProcess"),
             entry("gitcode_star", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeStarProcess"),
             entry("gitcode_watch", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeWatchProcess"),
             entry("gitcode_fork", "com.om.DataMagic.process.codePlatform.gitcode.GitCodeForkProcess"),
             entry("gitcode_dws_contribute",
                     "com.om.DataMagic.process.codePlatform.gitcode.dws.contribute.GitCodeContributeProcess"),
+            entry("gitee_user", "com.om.DataMagic.process.codePlatform.gitee.GiteeProcess"),
+            entry("gitee_repo", "com.om.DataMagic.process.codePlatform.gitee.GiteeRepoProcess"),
+            entry("gitee_pr", "com.om.DataMagic.process.codePlatform.gitee.GiteePRProcess"),
+            entry("gitee_issue", "com.om.DataMagic.process.codePlatform.gitee.GiteeIssueProcess"),
+            entry("gitee_comment", "com.om.DataMagic.process.codePlatform.gitee.GiteeCommentProcess"),
             entry("gitee_fork", "com.om.DataMagic.process.codePlatform.gitee.GiteeForkProcess"),
             entry("gitee_star", "com.om.DataMagic.process.codePlatform.gitee.GiteeStarProcess"),
             entry("gitee_watch", "com.om.DataMagic.process.codePlatform.gitee.GiteeWatchProcess")

@@ -40,11 +40,13 @@ public class PRConverter {
      * @param owner     所属者，用于设置namespace值
      * @return DO list
      */
-    public List<PRDO> toDOList(ArrayNode arrayNode, String owner) {
+    public List<PRDO> toDOList(ArrayNode arrayNode, String owner, CodePlatformEnum codePlatformEnum) {
         List<PRDO> prDOList = new ArrayList<>();
         for (JsonNode prNode : arrayNode) {
             PRDO prdo = toDO(prNode);
             prdo.setNamespace(owner);
+            prdo.setCodePlatform(codePlatformEnum.getText());
+            prdo.setUuid(codePlatformEnum.getText() + "-" + prdo.getId());
             prDOList.add(prdo);
         }
         return prDOList;
@@ -59,9 +61,7 @@ public class PRConverter {
     public PRDO toDO(JsonNode prJson) {
         PRDO prDO = new PRDO();
         prDO.setId(prJson.path("id").asText());
-        prDO.setCodePlatform(CodePlatformEnum.GITCODE.getText());
-        prDO.setUuid(CodePlatformEnum.GITCODE.getText() + "-" + prDO.getId());
-        prDO.setNumber(prJson.path("iid").asText());
+        prDO.setNumber(prJson.path("number").asText());
         prDO.setUrl(prJson.path("url").asText());
         prDO.setHtmlUrl(prJson.path("html_url").asText());
         prDO.setTitle(prJson.path("title").asText());

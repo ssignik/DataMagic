@@ -14,6 +14,7 @@ package com.om.DataMagic.client.codePlatform.gitee;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.om.DataMagic.common.config.TaskConfig;
+import com.om.DataMagic.common.exception.RateLimitException;
 import com.om.DataMagic.common.util.ObjectMapperUtil;
 import com.om.DataMagic.domain.codePlatform.gitcode.primitive.GitCodeConstant;
 import org.slf4j.Logger;
@@ -52,6 +53,122 @@ public class GiteeService {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(GiteeService.class);
 
+    /**
+     * @param username .
+     * @return userinfo
+     */
+    public String getUserInfo(String username) {
+        String path = "/users/" + username;
+        Map<String, String> params = Map.of(
+                "page", "1",
+                "pageSize", "100");
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 分页获取某个组织下所有仓库数据.
+     *
+     * @param orgName 组织名称
+     * @param page 当前页
+     * @return 仓库数据字符串
+     */
+    public String getRepoInfo(String orgName, int page) {
+        String path = String.format("/orgs/%s/repos", orgName);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        params.put("per_page", String.valueOf(GitCodeConstant.MAX_PER_PAGE));
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 分页获取仓库所有者下的某个仓库的pr数据.
+     *
+     * @param ownerName 仓库所有者
+     * @param repoName  仓库名称
+     * @param page      当前页
+     * @return pr数据字符串
+     */
+    public String getPRInfo(String ownerName, String repoName, int page) {
+        String path = String.format("/repos/%s/%s/pulls", ownerName, repoName);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        params.put("per_page", String.valueOf(GitCodeConstant.MAX_PER_PAGE));
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 分页获取仓库所有者下的某个仓库的pr下所有评论.
+     *
+     * @param ownerName 仓库所有者
+     * @param repoName  仓库名称
+     * @param number    pr 序号
+     * @param page      当前页
+     * @return comment数据字符串
+     */
+    public String getCommentInfoByPR(String ownerName, String repoName, String number, int page) {
+        String path = String.format("/repos/%s/%s/pulls/%s/comments", ownerName, repoName, number);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        params.put("per_page", String.valueOf(GitCodeConstant.MAX_PER_PAGE));
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 分页获取仓库所有者下的某个仓库的issue数据.
+     *
+     * @param ownerName 仓库所有者
+     * @param repoName  仓库名称
+     * @param page      当前页
+     * @return issue数据字符串
+     */
+    public String getIssueInfo(String ownerName, String repoName, int page) {
+        String path = String.format("/repos/%s/%s/issues", ownerName, repoName);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        params.put("per_page", String.valueOf(GitCodeConstant.MAX_PER_PAGE));
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 分页获取仓库所有者下的某个仓库的issue评论数据.
+     *
+     * @param ownerName 仓库所有者
+     * @param repoName  仓库名称
+     * @param number    issue 序号
+     * @param page      当前页
+     * @return comment数据字符串
+     */
+    public String getCommentInfoByIssue(String ownerName, String repoName, String number, int page) {
+        String path = String.format("/repos/%s/%s/issues/%s/comments", ownerName, repoName, number);
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        params.put("per_page", String.valueOf(GitCodeConstant.MAX_PER_PAGE));
+        try {
+            return client.callApi(path, params);
+        } catch (RateLimitException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 分页获取仓库所有者下的某个仓库的star数据.

@@ -14,6 +14,7 @@ package com.om.DataMagic.infrastructure.pgDB.converter;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.om.DataMagic.common.util.ObjectMapperUtil;
+import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.PRDO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ public class PRConverterTest {
         ArrayNode arrayNode = ObjectMapperUtil.toObject(ArrayNode.class, getPRListFromAPI());
         Assertions.assertNotNull(arrayNode);
 
-        List<PRDO> doList = prConverter.toDOList(arrayNode, ORG_NAME);
+        List<PRDO> doList = prConverter.toDOList(arrayNode, ORG_NAME, CodePlatformEnum.GITCODE);
         Assertions.assertEquals(2, doList.size());
         Assertions.assertEquals(ORG_NAME, doList.get(0).getNamespace());
         Assertions.assertEquals(0, doList.get(0).getAddedLines());

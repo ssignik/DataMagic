@@ -13,8 +13,21 @@
 package com.om.DataMagic.process.codePlatform.gitee;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.om.DataMagic.client.codePlatform.gitee.GiteeService;
+import com.om.DataMagic.common.util.ObjectMapperUtil;
+import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
+import com.om.DataMagic.infrastructure.pgDB.converter.PlatformUserConverter;
+import com.om.DataMagic.infrastructure.pgDB.dataobject.CommentDO;
+import com.om.DataMagic.infrastructure.pgDB.dataobject.IssueDO;
+import com.om.DataMagic.infrastructure.pgDB.dataobject.PRDO;
+import com.om.DataMagic.infrastructure.pgDB.service.CommentService;
+import com.om.DataMagic.infrastructure.pgDB.service.IssueService;
+import com.om.DataMagic.infrastructure.pgDB.service.PRService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +44,31 @@ public class GiteeProcess implements DriverManager {
      */
     @Autowired
     private PlatformUserService userService;
+    /**
+     * gitcode service.
+     */
+    @Autowired
+    private GiteeService service;
+    /**
+     * pr service.
+     */
+    @Autowired
+    private PRService prService;
+    /**
+     * issue service.
+     */
+    @Autowired
+    private IssueService issueService;
+    /**
+     * comment service.
+     */
+    @Autowired
+    private CommentService commentService;
+    /**
+     * platform user service.
+     */
+    @Autowired
+    private PlatformUserConverter converter;
 
     /**
      * Logger for logging messages in App class.
@@ -42,9 +80,57 @@ public class GiteeProcess implements DriverManager {
      */
     @Override
     public void run() {
-        Collection<PlatformUserDO> objList = new ArrayList<>();
-        LOGGER.info("gitee");
-        userService.saveOrUpdateBatch(objList);
+        Set<String> userLoginSet = new HashSet<>();
+
+        List<PRDO> prdoList = prService.list();
+        for (PRDO prdo : prdoList) {
+            userLoginSet.add(prdo.getUserLogin());
+            userLoginSet.add(prdo.getHeadUserLogin());
+            userLoginSet.add(prdo.getBaseUserLogin());
+            userLoginSet.add(prdo.getBaseOwnerUserLogin());
+        }
+
+        List<IssueDO> issueDOList = issueService.list();
+        for (IssueDO issueDO : issueDOList) {
+            userLoginSet.add(issueDO.getUserLogin());
+        }
+
+        List<CommentDO> commentDOList = commentService.list();
+        for (CommentDO commentDO : commentDOList) {
+            userLoginSet.add(commentDO.getUserLogin());
+        }
+
+        userLoginSet = userLoginSet.stream().filter(
+                s -> s != null && !s.isEmpty()).collect(Collectors.toSet());
+        List<PlatformUserDO> platformUserDOList = getUserList(userLoginSet);
+
+        if (!platformUserDOList.isEmpty()) {
+            userService.saveOrUpdateBatch(platformUserDOList);
+        }
+    }
+
+    /**
+     * 获取GitCode平台user信息.
+     *
+     * @param userLoginSet user login set.
+     * @return PlatformUserDO 集合.
+     */
+    private List<PlatformUserDO> getUserList(Set<String> userLoginSet) {
+        List<PlatformUserDO> platformUserList = new ArrayList<>();
+        for (String userLogin : userLoginSet) {
+            String userInfo = null;
+            try {
+                userInfo = service.getUserInfo(userLogin);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+                continue;
+            }
+            PlatformUserDO platformUserDO = converter.toDO(ObjectMapperUtil.toJsonNode(userInfo), CodePlatformEnum.GITEE);
+            if (platformUserDO != null) {
+                platformUserList.add(platformUserDO);
+            }
+        }
+        return platformUserList;
     }
 
 }

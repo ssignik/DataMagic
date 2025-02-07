@@ -39,14 +39,14 @@ public class PlatformUserConverter {
      * @param userJson user json数据.
      * @return DO 对象.
      */
-    public PlatformUserDO toDO(JsonNode userJson) {
+    public PlatformUserDO toDO(JsonNode userJson, CodePlatformEnum codePlatformEnum) {
         PlatformUserDO userDO = new PlatformUserDO();
         String errorCode = userJson.path("error_code").asText();
         if (!StringUtils.isEmpty(errorCode)) {
             return null;
         }
         userDO.setUserId(userJson.path("id").asText());
-        userDO.setUuid(CodePlatformEnum.GITCODE.getText() + "-" + userDO.getUserId());
+        userDO.setUuid(codePlatformEnum.getText() + "-" + userDO.getUserId());
         userDO.setUserLogin(userJson.path("login").asText());
         userDO.setUserName(userJson.path("name").asText());
         userDO.setAvatarUrl(userJson.path("avatar_url").asText());
@@ -55,10 +55,10 @@ public class PlatformUserConverter {
         userDO.setBio(userJson.path("bio").asText());
         userDO.setBlog(userJson.path("blog").asText());
         userDO.setCompany(userJson.path("company").asText());
-        userDO.setWechat(null);
-        userDO.setQq(null);
+        userDO.setWechat(userJson.path("wechat").asText());
+        userDO.setQq(userJson.path("qq").asText());
         userDO.setEmail(userJson.path("email").asText());
-        userDO.setCodePlatform(CodePlatformEnum.GITCODE.getText());
+        userDO.setCodePlatform(codePlatformEnum.getText());
         return userDO;
     }
 }

@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.om.DataMagic.client.codePlatform.gitcode.GitCodeService;
+import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.infrastructure.pgDB.converter.PlatformUserConverter;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.CommentDO;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.IssueDO;
@@ -126,7 +127,7 @@ public class GitCodeProcess implements DriverManager {
                 LOGGER.error(e.getMessage());
                 continue;
             }
-            PlatformUserDO platformUserDO = converter.toDO(ObjectMapperUtil.toJsonNode(userInfo));
+            PlatformUserDO platformUserDO = converter.toDO(ObjectMapperUtil.toJsonNode(userInfo), CodePlatformEnum.GITCODE);
             if (platformUserDO != null) {
                 platformUserList.add(platformUserDO);
             }

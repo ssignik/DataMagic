@@ -52,6 +52,8 @@ public class CommentConverter {
             commentDO.setIsSelf(String.valueOf(prdo.getUserId().equals(commentDO.getUserId())));
             commentDO.setNamespace(prdo.getNamespace());
             commentDO.setRepoPath(prdo.getRepoPath());
+            commentDO.setCodePlatform(prdo.getCodePlatform());
+            commentDO.setUuid(prdo.getCodePlatform() + "-" + commentDO.getId());
             issueDOList.add(commentDO);
         }
         return issueDOList;
@@ -74,6 +76,8 @@ public class CommentConverter {
             commentDO.setIsSelf(String.valueOf(issueDO.getUserId().equals(commentDO.getUserId())));
             commentDO.setNamespace(issueDO.getNamespace());
             commentDO.setRepoPath(issueDO.getRepoPath());
+            commentDO.setCodePlatform(issueDO.getCodePlatform());
+            commentDO.setUuid(issueDO.getCodePlatform() + "-" + commentDO.getId());
             issueDOList.add(commentDO);
         }
         return issueDOList;
@@ -86,9 +90,6 @@ public class CommentConverter {
     public CommentDO toDO(JsonNode commentJson) {
         CommentDO commentDO = new CommentDO();
         commentDO.setId(commentJson.path("id").asText());
-        commentDO.setCodePlatform(CodePlatformEnum.GITCODE.getText());
-        commentDO.setUuid(CodePlatformEnum.GITCODE.getText() + "-" + commentDO.getId());
-        commentDO.setHtmlUrl(null);
         commentDO.setBody(commentJson.path("body").asText());
         commentDO.setCreatedAt(DateUtil.parse(commentJson.path("created_at").asText()));
         commentDO.setUpdatedAt(DateUtil.parse(commentJson.path("updated_at").asText()));

@@ -40,11 +40,13 @@ public class IssueConverter {
      * @param owner     所属者，用于设置namespace值
      * @return DO list
      */
-    public List<IssueDO> toDOList(ArrayNode arrayNode, String owner) {
+    public List<IssueDO> toDOList(ArrayNode arrayNode, String owner, CodePlatformEnum codePlatformEnum) {
         List<IssueDO> issueDOList = new ArrayList<>();
         for (JsonNode issueNode : arrayNode) {
             IssueDO issueDO = toDO(issueNode);
             issueDO.setNamespace(owner);
+            issueDO.setCodePlatform(codePlatformEnum.getText());
+            issueDO.setUuid(codePlatformEnum.getText() + "-" + issueDO.getId());
             issueDOList.add(issueDO);
         }
         return issueDOList;
@@ -57,8 +59,6 @@ public class IssueConverter {
     public IssueDO toDO(JsonNode issueJson) {
         IssueDO issueDO = new IssueDO();
         issueDO.setId(issueJson.path("id").asText());
-        issueDO.setCodePlatform(CodePlatformEnum.GITCODE.getText());
-        issueDO.setUuid(CodePlatformEnum.GITCODE.getText() + "-" + issueDO.getId());
         issueDO.setNumber(issueJson.path("number").asText());
         issueDO.setUrl(issueJson.path("url").asText());
         issueDO.setHtmlUrl(issueJson.path("html_url").asText());
@@ -87,8 +87,8 @@ public class IssueConverter {
         issueDO.setRepoName(issueJson.path("repository").path("name").asText());
         issueDO.setRepoPath(issueJson.path("repository").path("path").asText());
         issueDO.setPriority(issueJson.path("priority").asText());
-        issueDO.setProgram(null);
-        issueDO.setSecurityHole(null);
+        issueDO.setProgram(issueJson.path("program").asText());
+        issueDO.setSecurityHole(issueJson.path("security_hole").asText());
         return issueDO;
     }
 

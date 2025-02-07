@@ -46,7 +46,9 @@ public class CommentConverter {
         List<CommentDO> issueDOList = new ArrayList<>();
         for (JsonNode issueNode : arrayNode) {
             CommentDO commentDO = toDO(issueNode);
-            commentDO.setHtmlUrl(prdo.getHtmlUrl() + GitCodeConstant.COMMENT_URL_PARAM + commentDO.getId());
+            if (CodePlatformEnum.GITCODE.getText().equals(prdo.getCodePlatform())){
+                commentDO.setHtmlUrl(prdo.getHtmlUrl() + GitCodeConstant.COMMENT_URL_PARAM + commentDO.getId());
+            }
             commentDO.setCommentType(GitEnum.COMMENT_PR.getValue());
             commentDO.setTagUrl(prdo.getHtmlUrl());
             commentDO.setIsSelf(String.valueOf(prdo.getUserId().equals(commentDO.getUserId())));
@@ -70,7 +72,11 @@ public class CommentConverter {
         List<CommentDO> issueDOList = new ArrayList<>();
         for (JsonNode issueNode : arrayNode) {
             CommentDO commentDO = toDO(issueNode);
-            commentDO.setHtmlUrl(issueDO.getHtmlUrl() + GitCodeConstant.COMMENT_URL_PARAM + commentDO.getId());
+            if (CodePlatformEnum.GITCODE.getText().equals(issueDO.getCodePlatform())){
+                commentDO.setHtmlUrl(issueDO.getHtmlUrl() + GitCodeConstant.COMMENT_URL_PARAM + commentDO.getId());
+            } else if (CodePlatformEnum.GITEE.getText().equals(issueDO.getCodePlatform())){
+                commentDO.setHtmlUrl(issueDO.getHtmlUrl() + GitCodeConstant.COMMENT_URL_PREFIX + commentDO.getId() + GitCodeConstant.COMMENT_URL_SUFFIX);
+            }
             commentDO.setCommentType(GitEnum.COMMENT_ISSUE.getValue());
             commentDO.setTagUrl(issueDO.getHtmlUrl());
             commentDO.setIsSelf(String.valueOf(issueDO.getUserId().equals(commentDO.getUserId())));
@@ -95,6 +101,7 @@ public class CommentConverter {
         commentDO.setUpdatedAt(DateUtil.parse(commentJson.path("updated_at").asText()));
         commentDO.setUserId(commentJson.path("user").path("id").asText());
         commentDO.setUserLogin(commentJson.path("user").path("login").asText());
+        commentDO.setHtmlUrl(commentJson.path("_links").path("html").path("href").asText());
         return commentDO;
     }
 }

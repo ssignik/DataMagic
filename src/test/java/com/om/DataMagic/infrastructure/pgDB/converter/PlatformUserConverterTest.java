@@ -12,6 +12,7 @@
 package com.om.DataMagic.infrastructure.pgDB.converter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.om.DataMagic.common.util.ObjectMapperUtil;
+import com.om.DataMagic.domain.codePlatform.gitcode.primitive.CodePlatformEnum;
 import com.om.DataMagic.infrastructure.pgDB.dataobject.PlatformUserDO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ public class PlatformUserConverterTest {
         PlatformUserConverter converter = new PlatformUserConverter();
         JsonNode jsonNode = ObjectMapperUtil.toJsonNode(getUserListFromAPI());
         Assertions.assertNotNull(jsonNode);
-        PlatformUserDO platformUserDO = converter.toDO(jsonNode);
+        PlatformUserDO platformUserDO = converter.toDO(jsonNode, CodePlatformEnum.GITEE);
         Assertions.assertEquals("650d67***139b49b41", platformUserDO.getUserId());
         Assertions.assertEquals("my@deng***mian.com", platformUserDO.getEmail());
     }
@@ -40,7 +41,7 @@ public class PlatformUserConverterTest {
         PlatformUserConverter converter = new PlatformUserConverter();
         JsonNode jsonNode = ObjectMapperUtil.toJsonNode(getUnExistFromAPI());
         Assertions.assertNotNull(jsonNode);
-        PlatformUserDO platformUserDO = converter.toDO(jsonNode);
+        PlatformUserDO platformUserDO = converter.toDO(jsonNode, CodePlatformEnum.GITEE);
         Assertions.assertNull(platformUserDO);
     }
     public String getUserListFromAPI(){

@@ -106,7 +106,7 @@ public class GiteeRepoProcess implements DriverManager {
                 repoList.stream().map(repoArray -> ObjectMapperUtil.toObject(ArrayNode.class, repoArray)).toList();
         List<RepoDO> repoDOList = new ArrayList<>();
         for (ArrayNode arrayNode : arrayNodeList) {
-            repoDOList.addAll(converter.toDOList(arrayNode, CodePlatformEnum.GITCODE));
+            repoDOList.addAll(converter.toDOList(arrayNode, CodePlatformEnum.GITEE));
         }
         repoService.saveOrUpdateBatch(repoDOList);
     }
